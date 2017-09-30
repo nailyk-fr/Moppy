@@ -159,29 +159,16 @@ void reset(byte pin)
 //Resets all the pins
 void resetAll(){
 
-  // Old one-at-a-time reset
-  //for (byte p=FIRST_PIN;p<=PIN_MAX;p+=2){
-  //  reset(p);
-  //}
-
-  //Stop all notes (don't want to be playing during/after reset)
   for (byte p=FIRST_PIN;p<=PIN_MAX;p+=2){
-    currentPeriod[p] = 0; // Stop playing notes
-  }
-
-  // New all-at-once reset
-  for (byte s=0;s<80;s++){ // For max drive's position
-    for (byte p=FIRST_PIN;p<=PIN_MAX;p+=2){
+    for(byte s=0; s<=currentPosition[p] ; s++) {
       digitalWrite(p+1,HIGH); // Go in reverse
       digitalWrite(p,HIGH);
+      delay(2); // give some time for pulse output
       digitalWrite(p,LOW);
     }
-    delay(5);
-  }
-
-  for (byte p=FIRST_PIN;p<=PIN_MAX;p+=2){
     currentPosition[p] = 0; // We're reset.
-    digitalWrite(p+1,LOW);
+    currentPeriod[p] = 0; // Stop playing notes
+    digitalWrite(p+1,LOW); // Can go forward now. 
   }
 
 }
