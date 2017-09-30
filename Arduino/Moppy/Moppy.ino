@@ -6,6 +6,7 @@ boolean firstRun = true; // Used for one-run-only stuffs;
 const byte FIRST_PIN = 2;
 const byte PIN_MAX = 17;
 #define RESOLUTION 40 //Microsecond resolution for notes
+#define SECUREPOS 10 //Don't reach end of motor steps
 
 
 /*NOTE: Many of the arrays below contain unused indexes.  This is 
@@ -111,10 +112,10 @@ void tick()
 void togglePin(byte pin, byte direction_pin) {
 
   //Switch directions if end has been reached
-  if (currentPosition[pin] >= MAX_POSITION[pin]) {
+  if (currentPosition[pin] >= (MAX_POSITION[pin])-SECUREPOS) {
     digitalWrite(direction_pin,HIGH);
   } 
-  else if (currentPosition[pin] <= 0) {
+  else if (currentPosition[pin]+SECUREPOS <= 0) {
     digitalWrite(direction_pin,LOW);
   }
 
@@ -125,6 +126,8 @@ void togglePin(byte pin, byte direction_pin) {
   else {
     currentPosition[pin]++;
   }
+
+  // currentPosition[pin] += (-1)*((-1)*digitalRead(direction_pin));  //don't use this! Will probably need a cast for negative value. 
 
   //Pulse the control pin
   digitalWrite(pin,!digitalRead(pin));
