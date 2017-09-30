@@ -102,60 +102,14 @@ void tick()
    If there is a period set for control pin 2, count the number of
    ticks that pass, and toggle the pin if the current period is reached.
    */
-  if (currentPeriod[2]>0){
-    currentTick[2]++;
-    if (currentTick[2] >= currentPeriod[2]){
-      togglePin(2,3);
-      currentTick[2]=0;
-    }
-  }
-  if (currentPeriod[4]>0){
-    currentTick[4]++;
-    if (currentTick[4] >= currentPeriod[4]){
-      togglePin(4,5);
-      currentTick[4]=0;
-    }
-  }
-  if (currentPeriod[6]>0){
-    currentTick[6]++;
-    if (currentTick[6] >= currentPeriod[6]){
-      togglePin(6,7);
-      currentTick[6]=0;
-    }
-  }
-  if (currentPeriod[8]>0){
-    currentTick[8]++;
-    if (currentTick[8] >= currentPeriod[8]){
-      togglePin(8,9);
-      currentTick[8]=0;
-    }
-  }
-  if (currentPeriod[10]>0){
-    currentTick[10]++;
-    if (currentTick[10] >= currentPeriod[10]){
-      togglePin(10,11);
-      currentTick[10]=0;
-    }
-  }
-  if (currentPeriod[12]>0){
-    currentTick[12]++;
-    if (currentTick[12] >= currentPeriod[12]){
-      togglePin(12,13);
-      currentTick[12]=0;
-    }
-  }
-  if (currentPeriod[14]>0){
-    currentTick[14]++;
-    if (currentTick[14] >= currentPeriod[14]){
-      togglePin(14,15);
-      currentTick[14]=0;
-    }
-  }
-  if (currentPeriod[16]>0){
-    currentTick[16]++;
-    if (currentTick[16] >= currentPeriod[16]){
-      togglePin(16,17);
-      currentTick[16]=0;
+
+  for (int x=FIRST_PIN;x<PIN_MAX;x+=2){ //Half max because we're stepping directly (no toggle)
+    if (currentPeriod[x]>0){
+      currentTick[x]++;
+      if (currentTick[x] >= currentPeriod[x]){
+        togglePin(x,x+1);
+        currentTick[x]=0;
+      }
     }
   }
 
