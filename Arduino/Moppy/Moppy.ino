@@ -49,23 +49,9 @@ unsigned int currentTick[] = {
 
 //Setup pins (Even-odd pairs for step control and direction
 void setup(){
-  pinMode(13, OUTPUT);// Pin 13 has an LED connected on most Arduino boards
-  pinMode(2, OUTPUT); // Step control 1
-  pinMode(3, OUTPUT); // Direction 1
-  pinMode(4, OUTPUT); // Step control 2
-  pinMode(5, OUTPUT); // Direction 2
-  pinMode(6, OUTPUT); // Step control 3
-  pinMode(7, OUTPUT); // Direction 3
-  pinMode(8, OUTPUT); // Step control 4
-  pinMode(9, OUTPUT); // Direction 4
-  pinMode(10, OUTPUT); // Step control 5
-  pinMode(11, OUTPUT); // Direction 5
-  pinMode(12, OUTPUT); // Step control 6
-  pinMode(13, OUTPUT); // Direction 6
-  pinMode(14, OUTPUT); // Step control 7
-  pinMode(15, OUTPUT); // Direction 7
-  pinMode(16, OUTPUT); // Step control 8
-  pinMode(17, OUTPUT); // Direction 8
+  for (int p=0;p<PIN_MAX;p++){ //Half max because we're stepping directly (no toggle)
+    pinMode(p, OUTPUT);
+  }
 
   //With all pins setup, let's do a first run reset
   resetAll();
