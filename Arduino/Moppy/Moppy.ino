@@ -26,7 +26,7 @@ byte MAX_POSITION[] = {
 
 //Array to track the current position of each floppy head.  (Only even indexes (i.e. 2,4,6...) are used)
 byte currentPosition[] = {
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  SECUREPOS,SECUREPOS,SECUREPOS,SECUREPOS,SECUREPOS,SECUREPOS,SECUREPOS,SECUREPOS,SECUREPOS,SECUREPOS,SECUREPOS,SECUREPOS,SECUREPOS,SECUREPOS,SECUREPOS,SECUREPOS,SECUREPOS,SECUREPOS,SECUREPOS};
 
 //Current period assigned to each pin.  0 = off.  Each period is of the length specified by the RESOLUTION
 //variable above.  i.e. A period of 10 is (RESOLUTION x 10) microseconds long.
