@@ -49,7 +49,7 @@ unsigned int currentTick[] = {
 
 //Setup pins (Even-odd pairs for step control and direction
 void setup(){
-  for (int p=0;p<PIN_MAX;p++){ //Half max because we're stepping directly (no toggle)
+  for (int p=FIRST_PIN;p<PIN_MAX;p++){ //Half max because we're stepping directly (no toggle)
     pinMode(p, OUTPUT);
   }
 
