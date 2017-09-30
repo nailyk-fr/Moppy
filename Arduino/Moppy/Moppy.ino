@@ -27,13 +27,6 @@ byte MAX_POSITION[] = {
 byte currentPosition[] = {
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
-/*Array to keep track of state of each pin.  Even indexes track the control-pins for toggle purposes.  Odd indexes
- track direction-pins.  LOW = forward, HIGH=reverse
- */
-int currentState[] = {
-  0,0,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW
-};
-
 //Current period assigned to each pin.  0 = off.  Each period is of the length specified by the RESOLUTION
 //variable above.  i.e. A period of 10 is (RESOLUTION x 10) microseconds long.
 unsigned int currentPeriod[] = {
@@ -119,16 +112,14 @@ void togglePin(byte pin, byte direction_pin) {
 
   //Switch directions if end has been reached
   if (currentPosition[pin] >= MAX_POSITION[pin]) {
-    currentState[direction_pin] = HIGH;
     digitalWrite(direction_pin,HIGH);
   } 
   else if (currentPosition[pin] <= 0) {
-    currentState[direction_pin] = LOW;
     digitalWrite(direction_pin,LOW);
   }
 
   //Update currentPosition
-  if (currentState[direction_pin] == HIGH){
+  if (digitalRead(direction_pin) == HIGH){
     currentPosition[pin]--;
   } 
   else {
@@ -136,8 +127,7 @@ void togglePin(byte pin, byte direction_pin) {
   }
 
   //Pulse the control pin
-  digitalWrite(pin,currentState[pin]);
-  currentState[pin] = ~currentState[pin];
+  digitalWrite(pin,!digitalRead(pin));
 }
 
 
@@ -192,7 +182,6 @@ void resetAll(){
   for (byte p=FIRST_PIN;p<=PIN_MAX;p+=2){
     currentPosition[p] = 0; // We're reset.
     digitalWrite(p+1,LOW);
-    currentState[p+1] = 0; // Ready to go forward.
   }
 
 }
