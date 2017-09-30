@@ -142,20 +142,6 @@ void blinkLED(){
   digitalWrite(13, LOW); 
 }
 
-//For a given controller pin, runs the read-head all the way back to 0
-void reset(byte pin)
-{
-  digitalWrite(pin+1,HIGH); // Go in reverse
-  for (byte s=0;s<MAX_POSITION[pin];s+=2){ //Half max because we're stepping directly (no toggle)
-    digitalWrite(pin,HIGH);
-    digitalWrite(pin,LOW);
-    delay(5);
-  }
-  currentPosition[pin] = 0; // We're reset.
-  digitalWrite(pin+1,LOW);
-  currentPosition[pin+1] = 0; // Ready to go forward.
-}
-
 //Resets all the pins
 void resetAll(){
 
