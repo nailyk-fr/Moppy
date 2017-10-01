@@ -126,6 +126,15 @@ void togglePin(byte pin, byte direction_pin) {
 
   currentPosition[pin]++;
   //Switch directions if end has been reached
+  if (currentPosition[pin]+SECUREPOS + currentPeriod[pin] >= (MAX_POSITION[pin])) {
+    // Stepper will not be able to reach end of period without going reverse. 
+    // Go reverse now! 
+    digitalWrite(direction_pin,!digitalRead(direction_pin));
+    // End of mtotor is reached, go the other way. 
+    currentPosition[pin]=0;
+  } 
+
+  // keep this for security purpose. 
   if (currentPosition[pin]+SECUREPOS >= (MAX_POSITION[pin])) {
     digitalWrite(direction_pin,!digitalRead(direction_pin));
     // End of mtotor is reached, go the other way. 
