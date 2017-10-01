@@ -45,6 +45,10 @@ unsigned int currentTick[] = {
 void setup(){
   for (int p=FIRST_PIN;p<PIN_MAX;p++){ //Half max because we're stepping directly (no toggle)
     pinMode(p, OUTPUT);
+    if(p%2 == 0) { // All step motors are idle on high level
+      digitalWrite(p,HIGH); 
+    }
+
   }
 
   //With all pins setup, let's do a first run reset
@@ -108,6 +112,9 @@ void tick()
         togglePin(x,x+1);
         currentTick[x]=0;
       }
+    } else {
+      digitalWrite(x,HIGH); // No period defined, put stepper in idle. 
+      
     }
   }
 
@@ -156,6 +163,9 @@ void resetAll(){
     currentPosition[p] = 0; // We're reset.
     currentPeriod[p] = 0; // Stop playing notes
     digitalWrite(p+1,LOW); // Can go forward now. 
+    if(p%2 == 0) { // All step motors are idle on high level
+      digitalWrite(p,HIGH); 
+    }
   }
 
 }
