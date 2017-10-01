@@ -22,7 +22,7 @@ const byte PIN_MAX = 17;
  half a position (use 158 and 98).
  */
 byte MAX_POSITION[] = {
-  0,0,158,0,158,0,158,0,158,0,158,0,158,0,158,0,158,0};
+  158,0,158,0,158,0,158,0,158,0,158,0,158,0,158,0,158,0};
 
 //Array to track the current position of each floppy head.  (Only even indexes (i.e. 2,4,6...) are used)
 byte currentPosition[] = {
@@ -31,7 +31,7 @@ byte currentPosition[] = {
 //Current period assigned to each pin.  0 = off.  Each period is of the length specified by the RESOLUTION
 //variable above.  i.e. A period of 10 is (RESOLUTION x 10) microseconds long.
 unsigned int currentPeriod[] = {
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20
 };
 
 //Current tick
@@ -49,15 +49,16 @@ void setup(){
 
   //With all pins setup, let's do a first run reset
   resetAll();
-  delay(1000);
+  delay(100);
 	
   Timer1.initialize(RESOLUTION); // Set up a timer at the defined resolution
-  Timer1.attachInterrupt(tick); // Attach the tick function
+  Timer1.attachInterrupt(tick,RESOLUTION); // Attach the tick function
 
   Serial.begin(9600);
 }
 
 void loop(){
+
   //Only read if we have 3 bytes waiting
   if (Serial.available() > 2){
     //Watch for special 100-message to act on
@@ -84,6 +85,7 @@ void loop(){
       currentPeriod[Serial.read()] = (Serial.read() << 8) | Serial.read();
     }
   }
+
 }
 
 
@@ -97,8 +99,10 @@ void tick()
    ticks that pass, and toggle the pin if the current period is reached.
    */
 
-  for (int x=FIRST_PIN;x<PIN_MAX;x+=2){ //Half max because we're stepping directly (no toggle)
+
+  for (int x=FIRST_PIN;x<PIN_MAX;x=x+2){ 
     if (currentPeriod[x]>0){
+      
       currentTick[x]++;
       if (currentTick[x] >= currentPeriod[x]){
         togglePin(x,x+1);
@@ -107,25 +111,19 @@ void tick()
     }
   }
 
+  
+
 }
 
 void togglePin(byte pin, byte direction_pin) {
 
+  currentPosition[pin]++;
   //Switch directions if end has been reached
-  if (currentPosition[pin] >= (MAX_POSITION[pin])-SECUREPOS) {
-    digitalWrite(direction_pin,HIGH);
+  if (currentPosition[pin]+SECUREPOS >= (MAX_POSITION[pin])) {
+    digitalWrite(direction_pin,!digitalRead(direction_pin));
+    // End of mtotor is reached, go the other way. 
+    currentPosition[pin]=0;
   } 
-  else if (currentPosition[pin]+SECUREPOS <= 0) {
-    digitalWrite(direction_pin,LOW);
-  }
-
-  //Update currentPosition
-  if (digitalRead(direction_pin) == HIGH){
-    currentPosition[pin]--;
-  } 
-  else {
-    currentPosition[pin]++;
-  }
 
   // currentPosition[pin] += (-1)*((-1)*digitalRead(direction_pin));  //don't use this! Will probably need a cast for negative value. 
 
@@ -149,7 +147,7 @@ void blinkLED(){
 void resetAll(){
 
   for (byte p=FIRST_PIN;p<=PIN_MAX;p+=2){
-    for(byte s=0; s<=currentPosition[p] ; s++) {
+    for(byte s=0; s<=80 ; s++) { // Do not use currentPos, we are forcing motors
       digitalWrite(p+1,HIGH); // Go in reverse
       digitalWrite(p,HIGH);
       delay(2); // give some time for pulse output
