@@ -5,6 +5,12 @@ boolean firstRun = true; // Used for one-run-only stuffs;
 //First pin being used for floppies, and the last pin.  Used for looping over all pins.
 const byte FIRST_PIN = 2;
 const byte PIN_MAX = 17;
+byte REMAP[] = {
+   0, 1, 2, 3, 4, 5, 6, 7, 8, 9,14,15,18,19,20,21,10,16  //for promicro
+// 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17  //Original output
+//WARNING! D'ont map the same pin twice!
+};
+
 #define RESOLUTION 40 //Microsecond resolution for notes
 #define SECUREPOS 10 //Don't reach end of motor steps
 
@@ -44,9 +50,9 @@ unsigned int currentTick[] = {
 //Setup pins (Even-odd pairs for step control and direction
 void setup(){
   for (int p=FIRST_PIN;p<PIN_MAX;p++){ //Half max because we're stepping directly (no toggle)
-    pinMode(p, OUTPUT);
+    pinMode(REMAP[p], OUTPUT);
     if(p%2 == 0) { // All step motors are idle on high level
-      digitalWrite(p,HIGH); 
+      digitalWrite(REMAP[p],HIGH); 
     }
 
   }
@@ -113,7 +119,7 @@ void tick()
         currentTick[x]=0;
       }
     } else {
-      digitalWrite(x,HIGH); // No period defined, put stepper in idle. 
+      digitalWrite(REMAP[x],HIGH); // No period defined, put stepper in idle. 
       
     }
   }
@@ -123,20 +129,21 @@ void tick()
 }
 
 void togglePin(byte pin, byte direction_pin) {
+  // Remaping is done into call function, do not call REMAP here again. 
 
   currentPosition[pin]++;
   //Switch directions if end has been reached
   if (currentPosition[pin]+SECUREPOS + currentPeriod[pin] >= (MAX_POSITION[pin])) {
     // Stepper will not be able to reach end of period without going reverse. 
     // Go reverse now! 
-    digitalWrite(direction_pin,!digitalRead(direction_pin));
+    digitalWrite(REMAP[direction_pin],!digitalRead(REMAP[direction_pin]));
     // End of mtotor is reached, go the other way. 
     currentPosition[pin]=0;
   } 
 
   // keep this for security purpose. 
   if (currentPosition[pin]+SECUREPOS >= (MAX_POSITION[pin])) {
-    digitalWrite(direction_pin,!digitalRead(direction_pin));
+    digitalWrite(REMAP[direction_pin],!digitalRead(REMAP[direction_pin]));
     // End of mtotor is reached, go the other way. 
     currentPosition[pin]=0;
   } 
@@ -144,20 +151,13 @@ void togglePin(byte pin, byte direction_pin) {
   // currentPosition[pin] += (-1)*((-1)*digitalRead(direction_pin));  //don't use this! Will probably need a cast for negative value. 
 
   //Pulse the control pin
-  digitalWrite(pin,!digitalRead(pin));
+  digitalWrite(REMAP[pin],!digitalRead(REMAP[pin]));
 }
 
 
 //
 //// UTILITY FUNCTIONS
 //
-
-//Not used now, but good for debugging...
-void blinkLED(){
-  digitalWrite(13, HIGH); // set the LED on
-  delay(250);              // wait for a second
-  digitalWrite(13, LOW); 
-}
 
 //Resets all the pins
 void resetAll(){
@@ -170,16 +170,16 @@ void resetAll(){
 
   for (byte p=FIRST_PIN;p<=PIN_MAX;p+=2){
     for(byte s=0; s<=80 ; s++) { // Do not use currentPos, we are forcing motors
-      digitalWrite(p+1,HIGH); // Go in reverse
-      digitalWrite(p,HIGH);
+      digitalWrite(REMAP[p+1],HIGH); // Go in reverse
+      digitalWrite(REMAP[p],HIGH);
       delay(2); // give some time for pulse output
-      digitalWrite(p,LOW);
+      digitalWrite(REMAP[p],LOW);
     }
     currentPosition[p] = 0; // We're reset.
 
-    digitalWrite(p+1,LOW); // Can go forward now. 
+    digitalWrite(REMAP[p+1],LOW); // Can go forward now. 
     if(p%2 == 0) { // All step motors are idle on high level
-      digitalWrite(p,HIGH); 
+      digitalWrite(REMAP[p],HIGH); 
     }
   }
 
