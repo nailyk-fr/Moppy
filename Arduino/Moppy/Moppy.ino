@@ -162,6 +162,12 @@ void blinkLED(){
 //Resets all the pins
 void resetAll(){
 
+  //done out of the reset loop because reset loop take lot of time. 
+  for (byte p=FIRST_PIN;p<=PIN_MAX;p+=2){
+    // First empty period, in case timer pop. 
+    currentPeriod[p] = 0; // Stop playing notes
+  }
+
   for (byte p=FIRST_PIN;p<=PIN_MAX;p+=2){
     for(byte s=0; s<=80 ; s++) { // Do not use currentPos, we are forcing motors
       digitalWrite(p+1,HIGH); // Go in reverse
@@ -170,7 +176,7 @@ void resetAll(){
       digitalWrite(p,LOW);
     }
     currentPosition[p] = 0; // We're reset.
-    currentPeriod[p] = 0; // Stop playing notes
+
     digitalWrite(p+1,LOW); // Can go forward now. 
     if(p%2 == 0) { // All step motors are idle on high level
       digitalWrite(p,HIGH); 
