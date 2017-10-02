@@ -58,7 +58,7 @@ void setup(){
   Timer1.initialize(RESOLUTION); // Set up a timer at the defined resolution
   Timer1.attachInterrupt(tick,RESOLUTION); // Attach the tick function
 
-  Serial.begin(9600);
+  Serial.begin(38400);
 }
 
 void loop(){
